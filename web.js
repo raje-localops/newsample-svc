@@ -48,6 +48,31 @@ app.get('/crash', (req, res) => {
   fs.readFileSync('/nonexistent/file/that/does/not/exist.txt')
 })
 
+// QA: checks S3 access through the service's IAM role (shared or dedicated)
+const { S3Client, PutObjectCommand, GetObjectCommand } = require("@aws-sdk/client-s3");
+const { STSClient, GetCallerIdentityCommand } = require("@aws-sdk/client-sts");
+
+app.get("/s3-test", async (req, res) => {
+  const bucket = process.env.MY_BUCKET_NAME;
+  const result = { bucket };
+  try {
+    // which role is the app running as?
+    result.role = (await new STSClient({}).send(new GetCallerIdentityCommand({}))).Arn;
+    // write a file, then read it back
+    const s3 = new S3Client({});
+    const key = `qa-test-${Date.now()}.txt`;
+    await s3.send(new PutObjectCommand({ Bucket: bucket, Key: key, Body: "hello" }));
+    const obj = await s3.send(new GetObjectCommand({ Bucket: bucket, Key: key }));
+    result.read = await obj.Body.transformToString();
+    result.s3 = "PASS";
+  } catch (e) {
+    result.s3 = "FAIL";
+    result.error = `${e.name}: ${e.message}`;
+  }
+  console.log("s3-test", JSON.stringify(result));
+  res.json(result);
+});
+
 app.listen(port, () => {
   console.log("\nWeb service arg:", process.argv)
   console.log("\nWeb service env:", process.env.ENV)
