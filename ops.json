@@ -1,0 +1,13 @@
+{
+  "dependencies": {
+    "s3": {
+      "buckets": [
+        {
+          "id": "qatest",
+          "prefix": "qa-iam",
+          "exports": { "MY_BUCKET_NAME": "$name" }
+        }
+      ]
+    }
+  }
+}
