@@ -1,0 +1,9 @@
+{
+  "init": [
+    {
+      "type": "job",
+      "once": true,
+      "cmd": "node job.js"
+    }
+  ]
+}
