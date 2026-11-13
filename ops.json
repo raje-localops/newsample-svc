@@ -1,6 +1,8 @@
 {
   "init": [
     {
+      "id": "migrate",
+      "prefix": "migrate",
       "type": "job",
       "once": true,
       "cmd": "node job.js"
