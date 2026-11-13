@@ -1,0 +1,6 @@
+{
+  "init": [
+    { "id": "cronce", "prefix": "cronce", "once": true,
+      "cmd": "/bin/sh -c 'echo CRON-ONCE ran on $HOSTNAME'" }
+  ]
+}
